@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="vi" data-theme="catppuccin_mocha">
+<head>
+<meta charset="UTF-8" />
+<title>Shooting Star — Trợ Lý Siêu Lười</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="bgLayer" class="bg-layer"></div>
+
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar glass">
+      <button id="menuBtn" class="icon-btn" title="Cài đặt">☰</button>
+      <div class="brand">✦ <span data-i18n="brandName">Shooting Star</span></div>
+      <select id="brainSelect" class="brain-select">
+        <option value="ollama">Ollama (local)</option>
+        <option value="gemini">Gemini</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+      </select>
+      <div class="spacer"></div>
+      <div id="clock" class="clock">--:--:--</div>
+    </header>
+
+    <!-- CHAT -->
+    <main class="chat-wrap">
+      <div id="chatTitle" class="chat-title glass" contenteditable="true" spellcheck="false">Untitled session</div>
+      <div id="messages" class="messages">
+        <div class="empty-state glass">
+          <p data-i18n="emptyHint">Gõ: "mở mc", "cài htop", hoặc chat bình thường. Enter để gửi.</p>
+        </div>
+      </div>
+
+      <form id="inputBar" class="input-bar glass">
+        <input id="chatInput" type="text" autocomplete="off" placeholder='Gõ: "mở mc", "cài htop"...' />
+        <button type="submit" class="send-btn" data-i18n="send">Gửi</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- SIDEBAR CÀI ĐẶT — trượt từ trái, KHÔNG mở window mới -->
+  <div id="settingsOverlay" class="overlay hidden"></div>
+  <aside id="settingsPanel" class="settings-panel glass">
+    <div class="settings-header">
+      <span>Cài đặt</span>
+      <button id="closeSettings" class="icon-btn">✕</button>
+    </div>
+
+    <div class="settings-tabs">
+      <button class="tab-btn active" data-tab="api">API Keys</button>
+      <button class="tab-btn" data-tab="appearance">Giao diện</button>
+      <button class="tab-btn" data-tab="shortcuts">Đường tắt</button>
+    </div>
+
+    <div class="settings-body">
+      <section id="tab-api" class="tab-content active">
+        <label>Gemini API key <input type="password" id="keyGemini" /></label>
+        <label>OpenAI API key <input type="password" id="keyOpenAI" /></label>
+        <label>Anthropic API key <input type="password" id="keyAnthropic" /></label>
+        <label>Ollama URL <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" /></label>
+        <label>Não mặc định
+          <select id="defaultBrain">
+            <option value="ollama">Ollama (local)</option>
+            <option value="gemini">Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+          </select>
+        </label>
+        <p class="dim">Key lưu ở ~/.config/shooting-star/config.json, quyền file 600.</p>
+      </section>
+
+      <section id="tab-appearance" class="tab-content">
+        <label>Theme
+          <select id="themeSelect">
+            <option value="catppuccin_mocha">Catppuccin Mocha</option>
+            <option value="dracula">Dracula</option>
+          </select>
+        </label>
+        <label>Ảnh nền <input type="file" id="bgUpload" accept="image/*" /></label>
+        <button id="clearBg" class="ghost-btn">Xóa ảnh nền</button>
+        <label>Độ mờ lớp phủ
+          <input type="range" id="bgOpacity" min="0" max="90" value="35" />
+        </label>
+        <label>Độ mờ kính (blur panel)
+          <input type="range" id="glassBlur" min="0" max="40" value="18" />
+        </label>
+      </section>
+
+      <section id="tab-shortcuts" class="tab-content">
+        <p class="dim">Từ khóa gõ trong chat → đường dẫn mở ngay, không cần hỏi AI.</p>
+        <ul id="shortcutList" class="shortcut-list"></ul>
+        <input type="text" id="newShortcutKey" placeholder="Từ khóa (vd: mở mc)" />
+        <input type="text" id="newShortcutPath" placeholder="Đường dẫn" />
+        <button id="addShortcut" class="ghost-btn">+ Thêm</button>
+      </section>
+    </div>
+
+    <button id="saveSettings" class="send-btn full">Lưu</button>
+  </aside>
+
+  <!-- CONFIRM DIALOG -->
+  <div id="confirmOverlay" class="overlay hidden">
+    <div class="confirm-card glass">
+      <div class="confirm-title">⚠ AI muốn thực thi lệnh trên máy bạn</div>
+      <div id="confirmKind" class="dim"></div>
+      <div id="confirmTarget" class="confirm-target"></div>
+      <div id="confirmReason" class="dim"></div>
+      <div class="confirm-actions">
+        <button id="confirmNo" class="no-btn">✕ NO</button>
+        <button id="confirmYes" class="yes-btn">✓ YES</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
