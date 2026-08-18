@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi" data-theme="catppuccin_mocha">
+<head>
+<meta charset="UTF-8" />
+<title>Astra Assistant</title>
+<link rel="stylesheet" href="style.css" />
+<script src="i18n.js"></script>
+</head>
+<body>
+  <div id="bgLayer" class="bg-layer"></div>
+
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar glass">
+      <button id="menuBtn" class="icon-btn" title="Cài đặt">☰</button>
+      <div class="brand">✦ <span data-i18n="brandName">Astra</span></div>
+      <select id="brainSelect" class="brain-select">
+        <option value="ollama">Ollama (local)</option>
+        <option value="gemini">Gemini</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+      </select>
+      <div class="spacer"></div>
+      <div id="clock" class="clock">--:--:--</div>
+    </header>
+
+    <!-- CHAT -->
+    <main class="chat-wrap">
+      <div id="chatTitle" class="chat-title glass" contenteditable="true" spellcheck="false" data-i18n="untitledSession">Untitled session</div>
+      <div id="messages" class="messages">
+        <div class="empty-state glass">
+          <p data-i18n="emptyHint">Gõ: "mở mc", "cài htop", hoặc chat bình thường. Enter để gửi.</p>
+        </div>
+      </div>
+
+      <form id="inputBar" class="input-bar glass">
+        <input id="chatInput" type="text" autocomplete="off" data-i18n-placeholder="inputPlaceholder" placeholder='Gõ: "mở mc", "cài htop"...' />
+        <button type="submit" class="send-btn" data-i18n="send">Gửi</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- SIDEBAR CÀI ĐẶT — trượt từ trái, KHÔNG mở window mới -->
+  <div id="settingsOverlay" class="overlay hidden"></div>
+  <aside id="settingsPanel" class="settings-panel glass">
+    <div class="settings-header">
+      <span data-i18n="settingsTitle">Cài đặt</span>
+      <button id="closeSettings" class="icon-btn">✕</button>
+    </div>
+
+    <div class="settings-tabs">
+      <button class="tab-btn active" data-tab="api" data-i18n="tabApi">API Keys</button>
+      <button class="tab-btn" data-tab="appearance" data-i18n="tabAppearance">Giao diện</button>
+      <button class="tab-btn" data-tab="shortcuts" data-i18n="tabShortcuts">Đường tắt</button>
+    </div>
+
+    <div class="settings-body">
+      <section id="tab-api" class="tab-content active">
+        <label><span data-i18n="labelGemini">Gemini API key</span> <input type="password" id="keyGemini" /></label>
+        <label><span data-i18n="labelGeminiModel">Model Gemini</span> <input type="text" id="geminiModel" placeholder="gemini-3.6-flash" /></label>
+        <label><span data-i18n="labelOpenAI">OpenAI API key</span> <input type="password" id="keyOpenAI" /></label>
+        <label><span data-i18n="labelAnthropic">Anthropic API key</span> <input type="password" id="keyAnthropic" /></label>
+        <label><span data-i18n="labelOllamaUrl">Ollama URL</span> <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" /></label>
+        <label><span data-i18n="labelOllamaModel">Model Ollama</span> <input type="text" id="ollamaModel" placeholder="llama3" /></label>
+        <label><span data-i18n="labelDefaultBrain">Não mặc định</span>
+          <select id="defaultBrain">
+            <option value="ollama">Ollama (local)</option>
+            <option value="gemini">Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+          </select>
+        </label>
+        <p class="dim" data-i18n="keyStorageNote">Key lưu ở ~/.config/shooting-star/config.json, quyền file 600.</p>
+      </section>
+
+      <section id="tab-appearance" class="tab-content">
+        <label><span data-i18n="labelLanguage">Ngôn ngữ</span>
+          <select id="languageSelect">
+            <option value="vi">Tiếng Việt</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label><span data-i18n="labelTheme">Theme</span>
+          <select id="themeSelect">
+            <option value="catppuccin_mocha">Catppuccin Mocha</option>
+            <option value="dracula">Dracula</option>
+          </select>
+        </label>
+        <label><span data-i18n="labelBg">Ảnh nền</span> <input type="file" id="bgUpload" accept="image/*" /></label>
+        <button id="clearBg" class="ghost-btn" data-i18n="clearBg">Xóa ảnh nền</button>
+        <label><span data-i18n="labelOverlayOpacity">Độ mờ lớp phủ</span>
+          <input type="range" id="bgOpacity" min="0" max="90" value="35" />
+        </label>
+        <label><span data-i18n="labelGlassBlur">Độ mờ kính (blur panel)</span>
+          <input type="range" id="glassBlur" min="0" max="40" value="18" />
+        </label>
+      </section>
+
+      <section id="tab-shortcuts" class="tab-content">
+        <p class="dim" data-i18n="shortcutHint">Từ khóa gõ trong chat → đường dẫn mở ngay, không cần hỏi AI.</p>
+        <ul id="shortcutList" class="shortcut-list"></ul>
+        <input type="text" id="newShortcutKey" data-i18n-placeholder="shortcutKeyPlaceholder" placeholder="Từ khóa (vd: mở mc)" />
+        <input type="text" id="newShortcutPath" data-i18n-placeholder="shortcutPathPlaceholder" placeholder="Đường dẫn" />
+        <button id="addShortcut" class="ghost-btn" data-i18n="addShortcut">+ Thêm</button>
+      </section>
+    </div>
+
+    <button id="saveSettings" class="send-btn full" data-i18n="save">Lưu</button>
+  </aside>
+
+  <!-- CONFIRM DIALOG -->
+  <div id="confirmOverlay" class="overlay hidden">
+    <div class="confirm-card glass">
+      <div class="confirm-title" data-i18n="confirmTitle">⚠ AI muốn thực thi lệnh trên máy bạn</div>
+      <div id="confirmKind" class="dim"></div>
+      <div id="confirmTarget" class="confirm-target"></div>
+      <div id="confirmReason" class="dim"></div>
+      <div class="confirm-actions">
+        <button id="confirmNo" class="no-btn" data-i18n="confirmNo">✕ NO</button>
+        <button id="confirmYes" class="yes-btn" data-i18n="confirmYes">✓ YES</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
